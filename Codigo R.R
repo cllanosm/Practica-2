@@ -36,3 +36,9 @@ colnames(linkCounts) <- c("Link", "Count")
 linkTable <- merge(linkData, linkCounts, by = "Link")
 linkTable <- linkTable[order(linkTable$Count, decreasing = TRUE),]
 
+#Pregunta 1.5
+
+enlaces <- xpathSApply(parsedHtml, "//a", xmlGetAttr, 'href')
+
+
+
