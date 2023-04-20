@@ -26,5 +26,13 @@ valores_nulos <-  sapply(links_text, is.null)
 
 valores_nulos <-  NA 
 
-valores
+#Pregunta 1.4
+
+links <- xpathSApply(parsedHtml, "//a", xmlGetAttr, 'href')
+linkTexts <- xpathSApply(parsedHtml, "//a", function(x) trimws(xpathSApply(x, "string(.)")))
+linkData <- data.frame(Link = links, Text = linkTexts, stringsAsFactors = FALSE)
+linkCounts <- as.data.frame(table(linkData$Link))
+colnames(linkCounts) <- c("Link", "Count")
+linkTable <- merge(linkData, linkCounts, by = "Link")
+linkTable <- linkTable[order(linkTable$Count, decreasing = TRUE),]
 
