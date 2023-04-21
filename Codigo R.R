@@ -6,6 +6,7 @@ content <-  content(html, as= "text")
 parsedHtml <-  htmlParse (content, asText = TRUE)
 
 
+
 #Pregunta 1.2
 
 title <- xpathSApply(parsedHtml,  "//title", xmlValue)
@@ -39,6 +40,9 @@ linkTable <- linkTable[order(linkTable$Count, decreasing = TRUE),]
 #Pregunta 1.5
 
 enlaces <- xpathSApply(parsedHtml, "//a", xmlGetAttr, 'href')
+
+linkTable$isabolsute <- length(grep("http", linkTable$Link)) >0|length(grep("https", linkTable$Link)) > 0
+
 
 
 
