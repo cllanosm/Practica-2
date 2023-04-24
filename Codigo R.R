@@ -62,37 +62,64 @@ linkData$Status_Code <- sapply(status_code, status_code)
 #Pregunta 2.1 Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
 
 library(ggplot2)
+library(ggpubr)
 
 linkData$Tipo_url <- ifelse(grepl("^http",linkData$Link),"Absoluto","Relativa" )
 
+
 #Creando Histograma para Url's Absolutas
 
-ggplot(linkData, aes(x=Freq, fill=link_type)) + 
-  geom_bar(binwidth = 1, position = "dodge") +
-  scale_fill_manual(values=c("#FF5733", "#6B33FF")) +
-  labs(x = "Frecuencia de apariciones", y = "N° de links_link", title ="links_link MediaWiki") +
-  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 10), expand = c(0, 0)) +
-  theme_light()
+url_freq <- table(linkData$Link)
 
+url_df <- data.frame(URL =names(url_freq), Frecuencia = as.numeric(url_freq))
 
-#Creando Histograma para Url's Relativas
+ggplot(url_df, aes(x = Frecuencia)) + 
+  geom_histogram() +
+  facet_wrap(~ ifelse(grepl("^https?://", URL), "URLs absolutas", "URLs relativas"), ncol = 2) +
+  ggtitle("Histograma de Frecuencia de Aparicion de URLs")
+  geom_text(stat = "count", aes(label = ..count..), vjust = 1)
+  
+  
+#Pregunta 2.2 Un gráfico de barras indicando la suma de enlaces que apuntan a otros dominios o 
+#             servicios (distinto a https://www.mediawiki.org en el caso de ejemplo) vs. la suma 
+#             de los otros enlaces.
+  
+  
+  
+#Identificando tipo de enlace
+  linkData$Tipo_Enlace <- ifelse(grepl("^https://www.mediawiki.org",linkData$LinkAbsoluto),"Interno","Externo")
+  
+  otros_links <- linkData[!grepl("^https://www.mediawiki.org", linkData$link) & !is.na(linkData$link), ]
+  suma_otros_links <- sum(otros_links$count, na.rm = TRUE)
+  media_links <- linkData[grepl("^https://www.mediawiki.org", linkData$link) & !is.na(linkData$link), ]
+  suma_media_links <- sum(media_links$count, na.rm = TRUE)
+  suma_links <- data.frame(Tipo = c("MediaWiki", "Otros"),
+                           Cantidad = c(suma_media_links, suma_otros_links))
+  
+  ggplot(suma_links, aes(x = Tipo, y = Cantidad, fill = Tipo)) + 
+    geom_bar(stat = "identity") + 
+    labs(title = "Suma de enlaces internos vs externos", x = "Tipo de enlace", y = "Cantidad") +
+    theme_light() +
+    scale_fill_manual(values = c("#00FF00", "#0000FF")) +
+    scale_y_continuous(limits = c(0, 150), breaks = seq(0, 150, 20))
+  
+  
+  
+  
+#Pregunta  2.3 Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
 
+# Calculando la frecuencia de cada Status_Code
+status_freq <- table(linkData$Status_Code) 
 
-#Unificando Histogramas
+# Crear un data.frame con los valores y porcentajes
+status_df <- data.frame(Status_Code = names(status_freq), 
+                        Count = as.numeric(status_freq),
+                        Percentage = paste0(round(100*as.numeric(status_freq)/sum(status_freq), 2), "%"))
 
-
-grafico_barras <- ggplot(linkData, aes(x=Freq)) + 
-  geometrico(aes(fill=link_type), 
-             binwidth = 1, 
-             position = "dodge") +
-  scale_fill_manual(values=c("#FF5733", "#6B33FF")) +
-  labs(x = "Frecuencia de apariciones", y = "N° de links_link", title ="links_link MediaWiki") +
-  scale_y_continuous(limits = c(0, 100), 
-                     breaks = seq(0, 100, 10), 
-                     expand = c(0, 0)) +
-  theme_light()
-
-
-rel_linkData <- linkData[linkData$Tipo_url == "relativo", ]
-hist(rel_linkData$Link, main = "Histograma de Frecuencia de Registros Relativos en Link",
-     xlab = "Link", ylab = "Frecuencia")
+# Generando el gráfico de tarta
+ggplot(status_df, aes(x="", y=Count, fill=Status_Code)) +
+  geom_bar(width = 1, stat = "identity") +
+  coord_polar("y", start=0) +
+  geom_text(aes(label = Percentage), position = position_stack(vjust = 0.1)) +
+  labs(title = "Porcentaje de registros por Status_Code")
+  
