@@ -1,4 +1,3 @@
-##Pregunta 1.1 Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
 library(httr)
 library(XML)
 library(stringr)
@@ -6,11 +5,13 @@ library(dplyr)
 library(purrr)
 library(ggplot2)
 library(gridExtra)
+
+##Pregunta 1.1 Descargar la página web de la URL indicada, y almacenarlo en un formato de R apto para ser tratado.
+
 html <-  GET("https://www.mediawiki.org/wiki/MediaWiki")
+status_code(html)
 content <-  content(html, as= "text")
-
-
-
+print (content)
 
 ##Pregunta 1.2 Analizar el contenido de la web, buscando el título de la página (que en HTML se etiqueta como “title”).
 parsedHtml <-  htmlParse (content) 
@@ -58,6 +59,7 @@ status_code <- map(linkData$LinkAbsoluto, HEAD)
 # Agregando columna Status_Code con valor respectivo
 linkData$Status_Code <- sapply(status_code, status_code)
 
+Tabla_estatus <- linkData$Status_Code
 
 #Pregunta 2.1 Un histograma con la frecuencia de aparición de los enlaces, pero separado por URLs absolutas (con “http…”) y URLs relativas.
 
