@@ -86,7 +86,6 @@ ggplot(url_df, aes(x = Frecuencia)) +
 #             de los otros enlaces.
   
   
-  
 #Identificando tipo de enlace
   linkData$Tipo_Enlace <- ifelse(grepl("^https://www.mediawiki.org",linkData$LinkAbsoluto),"Interno","Externo")
   
