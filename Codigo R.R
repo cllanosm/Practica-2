@@ -104,9 +104,7 @@ ggplot(url_df, aes(x = Frecuencia)) +
     scale_fill_manual(values = c("#00FF00", "#0000FF")) +
     scale_y_continuous(limits = c(0, 150), breaks = seq(0, 150, 20))
   
-  
-  
-  
+
 #Pregunta  2.3 Un gráfico de tarta (pie chart) indicando los porcentajes de Status de nuestro análisis.
 
 # Calculando la frecuencia de cada Status_Code
